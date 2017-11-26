@@ -48,16 +48,18 @@ class Node(object):
             self.getNode(nodeId) # raises a keyError if node does not exists
             raise Exception('node with this id already exists')
         except KeyError:
-            parentNode.children.append(nodeId)
-            parentNode.childrenNames.append(name)
-
             self.fillValues(nodeId, parentId, name)
+            parentNode.registerChild(self)
 
             try:
                 Node.nameList[parentId][name] = self
             except KeyError:
                 Node.nameList[parentId] = {}
                 Node.nameList[parentId][name] = self
+    
+    def registerChild(self, child):
+        self.children.append(child.id)
+        self.childrenNames.append(child.name)
 
     def fillValues(self, nodeId, parentId, name):
         self.id = nodeId
@@ -129,8 +131,7 @@ class Node(object):
         del Node.nameList[oldParent.id][node.name]
         Node.nameList[newParent.id][node.name] = node
 
-        newParent.children.append(node.id)
-        newParent.childrenNames.append(node.name)
+        newParent.registerChild(node)
 
 
     def getNode(self, nodeId):
