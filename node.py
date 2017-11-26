@@ -3,7 +3,7 @@ class Node(object):
     nodeList = {}
     nameList = {}
 
-    # constructor
+
     def __init__(self, nodeId, name, parentId):
         if nodeId == '' or name == '':
             raise Exception('id and name must be specified and not empty strings')
@@ -18,7 +18,6 @@ class Node(object):
             self.createRoot(nodeId, name)
 
 
-    # creating Root
     def createRoot(self, nodeId, name):
         try:
             if Node.rootNode:
@@ -32,7 +31,7 @@ class Node(object):
         except:
             raise
 
-    # creating node
+
     def createNode(self, nodeId, name, parentId):
         try:
             parentNode = self.getNode(parentId)
@@ -57,13 +56,16 @@ class Node(object):
                 Node.nameList[parentId] = {}
                 Node.nameList[parentId][name] = self
     
+
     def registerChild(self, child):
         self.children.append(child.id)
         self.childrenNames.append(child.name)
 
+
     def unregisterChild(self, child):
         self.children.remove(child.id)
         self.childrenNames.remove(child.name)
+
 
     def fillValues(self, nodeId, parentId, name):
         self.id = nodeId
@@ -73,7 +75,7 @@ class Node(object):
         self.childrenNames = []
         Node.nodeList[nodeId] = self
 
-    # delete node
+
     def deleteNode(nodeId):
         if not nodeId or nodeId == '':
             raise Exception('ID must be specified and not an empty string.')
@@ -95,16 +97,15 @@ class Node(object):
         del Node.nameList[node.parentId][node.name]
 
 
-    # moving node
     def moveNode(nodeId, parentId):
+        """
+        Throws KeyError if nodes were not found
+        """
         if not nodeId or nodeId == '' or not parentId or parentId == '':
             raise Exception('ID and parent ID must be specified and not an empty strings.')
         
-        try:
-            node = Node.getNode(None, nodeId)
-            parent = Node.getNode(None, parentId)
-        except KeyError:
-            raise
+        node = Node.getNode(None, nodeId)
+        parent = Node.getNode(None, parentId)
         
         if node.parentId == '':
           raise Exception('cannot move root node')
@@ -126,7 +127,7 @@ class Node(object):
             parent = parent.getNode(parent.parentId)
 
         oldParent = node.getNode(node.parentId)
-        node.parentId = parentId
+        node.parentId = newParent.id
 
         oldParent.unregisterChild(node)
         newParent.registerChild(node)
@@ -135,21 +136,20 @@ class Node(object):
         Node.nameList[newParent.id][node.name] = node
 
 
-
     def getNode(self, nodeId):
-        try:
-            node = Node.nodeList[nodeId]
-            return node
-        except KeyError:
-            raise
+        """
+        Throws KeyError if there is no node with provided id
+        """
+        node = Node.nodeList[nodeId]
+        return node
 
 
     def getNodeByName(self, name, parentId):
-        try:
-            node = Node.nameList[parentId][name]
-            return node
-        except KeyError:
-            raise
+        """
+        Throws KeyError if parent doesn't have node with provided name
+        """
+        node = Node.nameList[parentId][name]
+        return node
 
 
     def getSiblings(self, depth, nodes, minDepth, maxDepth):
