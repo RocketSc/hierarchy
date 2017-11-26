@@ -1,3 +1,9 @@
-.vscode
-.__pycache__
-instructions.txt
+*.exe
+.vscode/
+__pycache__/
+
+log
+node_log
+Instructions.txt
+test_client_darwin
+test_client_linux
