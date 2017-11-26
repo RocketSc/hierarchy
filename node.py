@@ -24,18 +24,13 @@ class Node(object):
             if Node.rootNode:
                 raise Exception('root node already exists')
             
-            self.id = nodeId
-            self.name = name
-            self.parent = ''
-            self.children = []
-            self.childrenNames = []
+            self.fillValues(nodeId, '', name)
 
             Node.rootNode = nodeId 
             Node.nodeList[nodeId] = self
         
         except:
             raise
-
 
     # creating node
     def createNode(self, nodeId, name, parent):
@@ -56,18 +51,21 @@ class Node(object):
             parentNode.children.append(nodeId)
             parentNode.childrenNames.append(name)
 
-            self.id = nodeId
-            self.parent = parent
-            self.name = name
-            self.children = []
-            self.childrenNames = []
+            self.fillValues(nodeId, parent, name)
 
-            Node.nodeList[nodeId] = self
             try:
                 Node.nameList[parent][name] = self
             except KeyError:
                 Node.nameList[parent] = {}
                 Node.nameList[parent][name] = self
+
+    def fillValues(self, nodeId, parentId, name):
+        self.id = nodeId
+        self.parent = parentId
+        self.name = name
+        self.children = []
+        self.childrenNames = []
+        Node.nodeList[nodeId] = self
 
     # delete node
     def deleteNode(nodeId):
