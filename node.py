@@ -4,13 +4,13 @@ class Node(object):
     nameList = {}
 
     # constructor
-    def __init__(self, nodeId, name, parent):
+    def __init__(self, nodeId, name, parentId):
         if nodeId == '' or name == '':
             raise Exception('id and name must be specified and not empty strings')
 
-        if parent != '':
+        if parentId != '':
             try:
-                self.createNode(nodeId, name, parent)
+                self.createNode(nodeId, name, parentId)
             except:
                 raise
 
@@ -33,9 +33,9 @@ class Node(object):
             raise
 
     # creating node
-    def createNode(self, nodeId, name, parent):
+    def createNode(self, nodeId, name, parentId):
         try:
-            parentNode = self.getNode(parent)
+            parentNode = self.getNode(parentId)
         except KeyError:
             raise Exception('parent node does node exist')
           
@@ -51,17 +51,17 @@ class Node(object):
             parentNode.children.append(nodeId)
             parentNode.childrenNames.append(name)
 
-            self.fillValues(nodeId, parent, name)
+            self.fillValues(nodeId, parentId, name)
 
             try:
-                Node.nameList[parent][name] = self
+                Node.nameList[parentId][name] = self
             except KeyError:
-                Node.nameList[parent] = {}
-                Node.nameList[parent][name] = self
+                Node.nameList[parentId] = {}
+                Node.nameList[parentId][name] = self
 
     def fillValues(self, nodeId, parentId, name):
         self.id = nodeId
-        self.parent = parentId
+        self.parentId = parentId
         self.name = name
         self.children = []
         self.childrenNames = []
@@ -81,13 +81,13 @@ class Node(object):
             raise Exception('Node must not have children')
 
         #removing id from parent lists
-        parent = node.getNode(node.parent)
+        parent = node.getNode(node.parentId)
         parent.children.remove(node.id)
         parent.childrenNames.remove(node.name)
 
         #removing id and name from class
         del Node.nodeList[node.id]
-        del Node.nameList[node.parent][node.name]
+        del Node.nameList[node.parentId][node.name]
 
 
     # moving node
@@ -101,7 +101,7 @@ class Node(object):
         except KeyError:
             raise
         
-        if node.parent == '':
+        if node.parentId == '':
           raise Exception('cannot move root node')
 
 
@@ -112,16 +112,16 @@ class Node(object):
 
         # check if we can reach the root
         while True:
-            if parent.parent == '':
+            if parent.parentId == '':
                 break
 
             if parent.id == node.id:
                 raise Exception('Move must not create a cycle in the tree')
 
-            parent = parent.getNode(parent.parent)
+            parent = parent.getNode(parent.parentId)
 
-        oldParent = node.getNode(node.parent)
-        node.parent = parentId
+        oldParent = node.getNode(node.parentId)
+        node.parentId = parentId
 
         oldParent.children.remove(node.id)
         oldParent.childrenNames.remove(node.name)
@@ -141,9 +141,9 @@ class Node(object):
             raise
 
 
-    def getNodeByName(self, name, parent):
+    def getNodeByName(self, name, parentId):
         try:
-            node = Node.nameList[parent][name]
+            node = Node.nameList[parentId][name]
             return node
         except KeyError:
             raise
@@ -154,10 +154,10 @@ class Node(object):
             return 
 
         if minDepth > 0 and depth >= minDepth: 
-            nodes.append({'id': self.id, 'name': self.name, 'parent_id': self.parent})
+            nodes.append({'id': self.id, 'name': self.name, 'parent_id': self.parentId})
 
         if minDepth == 0:
-            nodes.append({'id': self.id, 'name': self.name, 'parent_id': self.parent})
+            nodes.append({'id': self.id, 'name': self.name, 'parent_id': self.parentId})
 
         for childName in sorted(self.childrenNames):
             self.getNodeByName(childName, self.id).getSiblings(depth + 1, nodes, minDepth, maxDepth)
@@ -195,6 +195,6 @@ class Node(object):
     # print helper for debugging
     def __str__(self):
         try:
-            return self.id + ':' + self.name + ':parent - ' + self.parent
+            return self.id + ':' + self.name + ':parent - ' + self.parentId
         except AttributeError:
             return self.id + ':' + self.name + ':root'
