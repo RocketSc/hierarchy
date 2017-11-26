@@ -61,6 +61,10 @@ class Node(object):
         self.children.append(child.id)
         self.childrenNames.append(child.name)
 
+    def unregisterChild(self, child):
+        self.children.remove(child.id)
+        self.childrenNames.remove(child.name)
+
     def fillValues(self, nodeId, parentId, name):
         self.id = nodeId
         self.parentId = parentId
@@ -84,8 +88,7 @@ class Node(object):
 
         #removing id from parent lists
         parent = node.getNode(node.parentId)
-        parent.children.remove(node.id)
-        parent.childrenNames.remove(node.name)
+        parent.unregisterChild(node)
 
         #removing id and name from class
         del Node.nodeList[node.id]
@@ -125,13 +128,12 @@ class Node(object):
         oldParent = node.getNode(node.parentId)
         node.parentId = parentId
 
-        oldParent.children.remove(node.id)
-        oldParent.childrenNames.remove(node.name)
+        oldParent.unregisterChild(node)
+        newParent.registerChild(node)
 
         del Node.nameList[oldParent.id][node.name]
         Node.nameList[newParent.id][node.name] = node
 
-        newParent.registerChild(node)
 
 
     def getNode(self, nodeId):
